@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from 'react'
 
 import DayListItem from "../src/components/DayListItem";
 import DayList from "../src/components/DayList";
@@ -11,6 +11,7 @@ import Show from "components/Appointment/Show";
 import Confirm from "components/Appointment/Confirm";
 import Status from "components/Appointment/Status";
 import Error from "components/Appointment/Error";
+import Form from "components/Appointment/Form";
 
 import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
@@ -184,4 +185,34 @@ storiesOf("Button", module)
           <Error 
           message="Could not delete appointment."
           onClose={action("onClose")}/>
+        ))
+        .add("Create", () => (
+          <Form 
+          interviewers={interviewers}
+          onSave={action("onSave")}
+          onCancel={action("onCancel")}/>
+        ))      
+        .add("Edit", () => (
+          <Form 
+          student="Mohamed Thameem"
+          interviewer={1}
+          interviewers={interviewers}
+          onSave={action("onSave")}
+          onCancel={action("onCancel")}/>
+        ))
+        .add("Appointment Empty", () => (
+          <Fragment>
+            <Appointment id={1} time="4pm" />
+            <Appointment time="5pm" />
+          </Fragment>
+        ))
+        .add("Appointment Booked", () => (
+          <Fragment>
+            <Appointment
+              id={1}
+              time="4pm"
+              interview={{ student: "Lydia Miller-Jones", interviewer }}
+            />
+            <Appointment time="5pm" />
+          </Fragment>
         ));
