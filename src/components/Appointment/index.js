@@ -17,6 +17,7 @@ const DELETING = "DELETING";
 const DEL_ERROR = "DEL_ERROR";
 const SAV_ERROR = "SAV_ERROR";
 const CONFIRM = "CONFIRM";
+const EDIT = "EDIT";
 export default function Appointment(props) {
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
@@ -64,11 +65,11 @@ export default function Appointment(props) {
       {mode === DELETING && <Status message="Deleting" />}
 
       {mode === DEL_ERROR && (
-        <Error message="Unexpected error happened while deleting" />
+        <Error message="Unexpected error happened while deleting" onClose={back} />
       )}
 
       {mode === SAV_ERROR && (
-        <Error message="Unexpected error happened while saving" />
+        <Error message="Unexpected error happened while saving" onClose={back} />
       )}
 
       {mode === CREATE && (
@@ -84,8 +85,20 @@ export default function Appointment(props) {
           student={props.interview.student}
           interviewer={props.interview.interviewer}
           onDelete={() => transition(CONFIRM)}
+          onEdit ={() => transition(EDIT)}
         />
       )}
+
+      {mode === EDIT && (
+        <Form
+          student={props.interview.student}
+          interviewer={props.interview.interviewer.id}
+          interviewers={props.interviewers}
+          onCancel={() => back(SHOW)}
+          onSave={save}
+        />
+      )}
+
 
       {mode === CONFIRM && (
         <Confirm
