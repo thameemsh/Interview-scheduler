@@ -46,8 +46,9 @@ export default function Application(props) {
       ...state.appointments,
       [id]: appointment
     };
+    axios.put(`http://localhost:8001/api/appointments/${id}`, appointment)
+    .then(setState({...state, appointments:appointments}) )
 
-    setState({...state, appointments:appointments})
   }
 
   const appointmentsArray = dailyAppointments.map(appointment => {
