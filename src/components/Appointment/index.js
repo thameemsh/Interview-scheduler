@@ -3,6 +3,7 @@ import Header from "./Header";
 import Show from "./Show";
 import Empty from "./Empty";
 import Status from "./Status";
+import Error from "./Error";
 import "components/Appointment/styles.scss";
 import useVisualMode from "hooks/useVisualMode";
 import Form from "./Form";
@@ -11,46 +12,76 @@ const EMPTY = "EMPTY";
 const SHOW = "SHOW";
 const CREATE = "CREATE";
 const SAVING = "SAVING";
+const DELETING = "DELETING";
+const DEL_ERROR = "DEL_ERROR";
+const SAV_ERROR = "SAV_ERROR";
 export default function Appointment(props) {
-
   const { mode, transition, back } = useVisualMode(
-    props.interview ? SHOW : EMPTY);
+    props.interview ? SHOW : EMPTY
+  );
 
-    function save(name, interviewer) {
-      const interview = {
-        student: name,
-        interviewer
-      };
+  const save = (name, interviewer) => {
+    const interview = {
+      student: name,
+      interviewer,
+    };
 
-      const bookInterviewPromise = () => {
-        return new Promise((resolve) => {
-          props.bookInterview(props.id, interview)
-          resolve()
+    transition(SAVING);
+
+    props
+      .bookInterview(props.id, interview)
+      .then(() => {
+        transition(SHOW);
       })
-    }
-      bookInterviewPromise().then(() => {
-        setTimeout(() =>transition(SAVING),50);
-        setTimeout(() =>transition(SHOW),750);
-      })
+      .catch((err) => {
+        transition(SAV_ERROR, true);
+      });
+  };
 
-    }
+  const deleteInterview = () => {
+    transition(DELETING);
+
+    props
+      .cancelInterview(props.id)
+      .then(() => {
+        transition(EMPTY);
+      })
+      .catch((err) => {
+        transition(DEL_ERROR, true);
+      });
+  };
 
   return (
     <article className="appointment">
       <Header time={props.time} />
+
       {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
-      {mode === SAVING && <Status message="Saving" /> } 
+
+      {mode === SAVING && <Status message="Saving" />}
+
+      {mode === DELETING && <Status message="Deleting" />}
+
+      {mode === DEL_ERROR && (
+        <Error message="Unexpected error happened while deleting" />
+      )}
+
+      {mode === SAV_ERROR && (
+        <Error message="Unexpected error happened while saving" />
+      )}
+
       {mode === CREATE && (
         <Form
-          interviewers = {props.interviewers}
-          onCancel = {() => back(EMPTY)}
-          onSave ={save}
+          interviewers={props.interviewers}
+          onCancel={() => back(EMPTY)}
+          onSave={save}
         />
       )}
+
       {mode === SHOW && (
         <Show
           student={props.interview.student}
           interviewer={props.interview.interviewer}
+          onDelete={deleteInterview}
         />
       )}
     </article>
