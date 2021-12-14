@@ -14,8 +14,8 @@ const SHOW = "SHOW";
 const CREATE = "CREATE";
 const SAVING = "SAVING";
 const DELETING = "DELETING";
-const DEL_ERROR = "DEL_ERROR";
-const SAV_ERROR = "SAV_ERROR";
+const ERROR_DELETE = "ERROR_DELETE";
+const ERROR_SAVE = "ERROR_SAVE";
 const CONFIRM = "CONFIRM";
 const EDIT = "EDIT";
 export default function Appointment(props) {
@@ -36,21 +36,21 @@ export default function Appointment(props) {
       .then(() => {
         transition(SHOW);
       })
-      .catch((err) => {
-        transition(SAV_ERROR, true);
+      .catch(error => {
+        transition(ERROR_SAVE, true);
       });
   };
 
   const deleteInterview = () => {
-    transition(DELETING);
+    transition(DELETING, true);
 
     props
       .cancelInterview(props.id)
       .then(() => {
         transition(EMPTY);
       })
-      .catch(() => {
-        transition(DEL_ERROR, true);
+      .catch(error => {
+        transition(ERROR_DELETE, true);
       });
   };
 
@@ -64,11 +64,11 @@ export default function Appointment(props) {
 
       {mode === DELETING && <Status message="Deleting" />}
 
-      {mode === DEL_ERROR && (
+      {mode === ERROR_DELETE && (
         <Error message="Unexpected error happened while deleting" onClose={back} />
       )}
 
-      {mode === SAV_ERROR && (
+      {mode === ERROR_SAVE && (
         <Error message="Unexpected error happened while saving" onClose={back} />
       )}
 
