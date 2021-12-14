@@ -1,7 +1,7 @@
-import react, { useState } from "react"
+import { useState } from "react"
 
 export default function useVisualMode(initial) {
-
+// eslint-disable-next-line
   const [mode, setMode] = useState(initial);
   const [history, setHistory] = useState([initial]);
 

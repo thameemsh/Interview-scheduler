@@ -30,8 +30,6 @@ export default function Appointment(props) {
           interviewer={props.interview.interviewer}
         />
       )}
-
-
     </article>
   );
 }
