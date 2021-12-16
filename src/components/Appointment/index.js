@@ -24,7 +24,8 @@ export default function Appointment(props) {
   );
 
   const save = (name, interviewer) => {
-    const interview = {
+    if(!interviewer) throw new Error("Please enter interviewer");
+      const interview = {
       student: name,
       interviewer,
     };
