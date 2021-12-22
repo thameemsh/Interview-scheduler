@@ -26,16 +26,16 @@ export default function useApplicationData() {
     });
   }, []);
 
-  function dayOfTheWeek(day) {
-    const dayOfWeek = {
-      Monday: 0,
-      Tuesday: 1,
-      Wednesday: 2,
-      Thursday: 3,
-      Friday: 4,
-    };
-    return dayOfWeek[day];
-  }
+  // To get the free spots available for the current day.
+  const getFreeSpots = (state, appointments) => {
+    const appointmentDay = state.days.filter((day) => day.name === state.day);
+    // console.log("appointmentDay",appointmentDay);
+    const appointmentsToday = appointmentDay[0].appointments;
+    // console.log("appointmentsToday",appointmentsToday);
+    const emptySpots = appointmentsToday.filter((appointment) => !appointments[appointment].interview).length;
+    // console.log("emptySpots",emptySpots);
+    return emptySpots;
+  };
 
   function bookInterview(id, interview) {
     // console.log(id, interview);
@@ -48,29 +48,17 @@ export default function useApplicationData() {
       [id]: appointment,
     };
 
-    const dayOfWeek = dayOfTheWeek(state.day);
+    const days = [...state.days];
+    const dayIndex = state.days.findIndex((day) =>
+      day.appointments.includes(id)
+    );
+    const spots = getFreeSpots(state, appointments);
 
-    let day = {
-      ...state.days[dayOfWeek],
-      spots: state.days[dayOfWeek],
+    const newDay = {
+      ...days[dayIndex],
+      spots,
     };
-
-
-    if (!state.appointments[id].interview) {
-      day = {
-        ...state.days[dayOfWeek],
-        spots: state.days[dayOfWeek].spots - 1,
-      };
-    } else { //When Editing the count must not change
-      day = {
-        ...state.days[dayOfWeek],
-        spots: state.days[dayOfWeek].spots,
-      };
-    }
-
-    let days = state.days;
-    days[dayOfWeek] = day;
-
+    days[dayIndex] = newDay;
    
     return axios
       .put(`http://localhost:8001/api/appointments/${id}`, appointment)
@@ -89,15 +77,18 @@ export default function useApplicationData() {
       [id]: appointment,
     };
 
-    const dayOfWeek = dayOfTheWeek(state.day);
 
-    const day = {
-      ...state.days[dayOfWeek],
-      spots: state.days[dayOfWeek].spots + 1,
+    const days = [...state.days];
+    const dayIndex = state.days.findIndex((day) =>
+      day.appointments.includes(id)
+    );
+    const spots = getFreeSpots(state, appointments);
+
+    const newDay = {
+      ...days[dayIndex],
+      spots,
     };
-
-    let days = state.days;
-    days[dayOfWeek] = day;
+    days[dayIndex] = newDay;
 
     return axios
       .delete(`http://localhost:8001/api/appointments/${id}`)
@@ -108,3 +99,50 @@ export default function useApplicationData() {
 
   return { state, setDay, bookInterview, cancelInterview };
 }
+
+
+// Previous code for updating the spots. I kept it for future reference. Also need to fix the bug in it that makes and update to spot when database is run in error mode.
+
+  // function dayOfTheWeek(day) {
+  //   const dayOfWeek = {
+  //     Monday: 0,
+  //     Tuesday: 1,
+  //     Wednesday: 2,
+  //     Thursday: 3,
+  //     Friday: 4,
+  //   };
+  //   return dayOfWeek[day];
+  // }
+
+  //Inside bookInterview() 
+    
+  // const dayOfWeek = dayOfTheWeek(state.day);
+  // let day = {
+  //   ...state.days[dayOfWeek],
+  //   spots: state.days[dayOfWeek],
+  // };
+  // if (!state.appointments[id].interview) {
+  //   day = {
+  //     ...state.days[dayOfWeek],
+  //     spots: state.days[dayOfWeek].spots - 1,
+  //   };
+  // } else { //When Editing the count must not change
+  //   day = {
+  //     ...state.days[dayOfWeek],
+  //     spots: state.days[dayOfWeek].spots,
+  //   };
+  // }
+  // let days = state.days;
+  // days[dayOfWeek] = day;
+
+  //Inside cancelInterview() 
+
+    // const dayOfWeek = dayOfTheWeek(state.day);
+
+    // const day = {
+    //   ...state.days[dayOfWeek],
+    //   spots: state.days[dayOfWeek].spots + 1,
+    // };
+
+    // let days = state.days;
+    // days[dayOfWeek] = day;
