@@ -1,3 +1,5 @@
+//    Main application component responsible for rendering everything.
+
 import React from "react";
 import DayList from "./DayList";
 

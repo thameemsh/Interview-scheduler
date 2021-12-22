@@ -29,16 +29,12 @@ export default function useApplicationData() {
   // To get the free spots available for the current day.
   const getFreeSpots = (state, appointments) => {
     const appointmentDay = state.days.filter((day) => day.name === state.day);
-    // console.log("appointmentDay",appointmentDay);
     const appointmentsToday = appointmentDay[0].appointments;
-    // console.log("appointmentsToday",appointmentsToday);
     const emptySpots = appointmentsToday.filter((appointment) => !appointments[appointment].interview).length;
-    // console.log("emptySpots",emptySpots);
     return emptySpots;
   };
 
   function bookInterview(id, interview) {
-    // console.log(id, interview);
     const appointment = {
       ...state.appointments[id],
       interview: { ...interview },
@@ -76,7 +72,6 @@ export default function useApplicationData() {
       ...state.appointments,
       [id]: appointment,
     };
-
 
     const days = [...state.days];
     const dayIndex = state.days.findIndex((day) =>

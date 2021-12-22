@@ -1,3 +1,7 @@
+// React component that shows an interview appointment.
+//    This component has various modes that determine what is displayed,
+//    and transitions between them (handled by the useVisualMode hook).
+
 import React from "react";
 import Header from "./Header";
 import Show from "./Show";
@@ -23,6 +27,7 @@ export default function Appointment(props) {
     props.interview ? SHOW : EMPTY
   );
 
+// Calling the bookInterview function while performing saving operation asynchronously before changing the mode to SHOW
   const save = (name, interviewer) => {
     if(!interviewer) throw new Error("Please enter interviewer");
       const interview = {
@@ -42,6 +47,7 @@ export default function Appointment(props) {
       });
   };
 
+  // Calling the cancelInterview function while performing delete operation asynchronously before changing the mode to EMPTY
   const deleteInterview = () => {
     transition(DELETING, true);
 
